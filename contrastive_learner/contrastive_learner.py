@@ -134,7 +134,11 @@ class OutputHiddenLayer(nn.Module):
 # main class
 
 class ContrastiveLearner(nn.Module):
-    def __init__(self, net, image_size, hidden_layer = -2, project_hidden = True, project_dim=128, augment_both=True, use_nt_xent_loss=False, augment_fn = None, use_bilinear = False, use_momentum = False, momentum_value = 0.999, key_encoder = None, temperature = 0.1):
+    def __init__(
+            self, net, image_size, hidden_layer = -2, project_hidden = True, 
+            project_dim=128, augment_both=True, use_nt_xent_loss=False, augment_fn = None, 
+            use_bilinear = False, use_momentum = False, momentum_value = 0.999, key_encoder = None, 
+            temperature = 0.1, device='cpu'):
         super().__init__()
         self.net = OutputHiddenLayer(net, layer=hidden_layer)
 
@@ -169,7 +173,9 @@ class ContrastiveLearner(nn.Module):
         self.keys = None
 
         # send a mock image tensor to instantiate parameters
-        self.forward(torch.randn(1, 3, image_size, image_size))
+        init_tensor = torch.randn(1, 3, image_size, image_size)
+        init_tensor = init_tensor.to(device)
+        self.forward(init_tensor)
 
     @singleton('key_encoder')
     def _get_key_encoder(self):
